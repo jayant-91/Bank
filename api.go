@@ -140,7 +140,7 @@ func creatJWT(account *Account) (string, error) {
 	return token.SignedString([]byte(secret))
 }
 
-func PermissinDenied(w http.ResponseWriter) {
+func PermissionDenied(w http.ResponseWriter) {
 	WriteJSON(w, http.StatusForbidden, ApiError{Error: "permission denied"})
 }
 
@@ -153,31 +153,31 @@ func withJWTAuth(handlerFunc http.HandlerFunc, s Storage) http.HandlerFunc {
 
 		token, err := validateJWT(tokenString)
 		if err != nil {
-			PermissinDenied(w)
+			PermissionDenied(w)
 			return
 		}
 
 		if !token.Valid {
-			PermissinDenied(w)
+			PermissionDenied(w)
 			return
 		}
 
 		userID, err := getID(r)
 		if err != nil {
-			PermissinDenied(w)
+			PermissionDenied(w)
 			return
 		}
 
 		account, err := s.GetAccountByID(userID)
 		if err != nil {
-			PermissinDenied(w)
+			PermissionDenied(w)
 			return
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
 
 		if account.Number != int64(claims["accountNumber"].(float64)) {
-			PermissinDenied(w)
+			PermissionDenied(w)
 			return
 		}
 
