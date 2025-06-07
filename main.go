@@ -4,7 +4,16 @@ import (
 	"flag"
 	"fmt"
 	"log"
+
+	"github.com/joho/godotenv"
 )
+
+func loadENV() {
+	// Load .env file (optional error handling)
+	if err := godotenv.Load(); err != nil {
+		log.Println("[No .env file found] => if you are running this inside container ignore this")
+	}
+}
 
 func seedAccount(store Storage, fname, lname, pw string) *Account {
 	acc, err := NewAccount(fname, lname, pw)
@@ -28,6 +37,8 @@ func seedAccounts(s Storage) {
 }
 
 func main() {
+	loadENV()
+
 	seed := flag.Bool("seed", false, "seed the db")
 	flag.Parse()
 

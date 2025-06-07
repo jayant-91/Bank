@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    # dont need port forwording because all services are in the same network
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    depends_on:
+      - postgres
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: "postgres://postgres:mysecretpassword@postgres:5432/postgres?sslmode=disable"
+      JWT_SECRET: hunter999
+    # Make sure your Go app reads DB config from env DATABASE_URL
+
+volumes:
+  pgdata:

@@ -1,0 +1,23 @@
+# Ignore Git files
+.git
+.gitignore
+
+# Ignore local configs
+.env
+.vscode/
+.idea/
+
+# Ignore build output folders
+bin/
+build/
+dist/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore test files if you want
+*_test.go
+
+# Ignore Dockerfile itself? (usually no)
+# Dockerfile

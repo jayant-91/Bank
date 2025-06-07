@@ -17,6 +17,11 @@ type APIServer struct {
 	store      Storage
 }
 
+type newAccountResponse struct {
+	Token  string `json:"token"`
+	Number int64  `json:"number"`
+}
+
 func NewAPIServer(listenAddr string, store Storage) *APIServer {
 	return &APIServer{
 		listenAddr: listenAddr,
@@ -120,6 +125,9 @@ func (s *APIServer) handleCreateAccount(w http.ResponseWriter, r *http.Request) 
 		return err
 	}
 
+	if createAccountReq.FirstName == "" || createAccountReq.LastName == "" || createAccountReq.Password == "" {
+		return fmt.Errorf("first name, last name, and password must not be empty")
+	}
 	account, err := NewAccount(createAccountReq.FirstName, createAccountReq.LastName, createAccountReq.Password)
 	if err != nil {
 		return err
@@ -129,14 +137,12 @@ func (s *APIServer) handleCreateAccount(w http.ResponseWriter, r *http.Request) 
 		return err
 	}
 
-	// tokenstring, err := creatJWT(account)
-	// if err != nil {
-	// 	return err
-	// }
+	tokenstring, err := creatJWT(account)
+	if err != nil {
+		return err
+	}
 
-	// fmt.Println("JWT-token: ", tokenstring)
-
-	return WriteJSON(w, http.StatusOK, account)
+	return WriteJSON(w, http.StatusOK, newAccountResponse{Token: tokenstring, Number: account.Number})
 }
 
 func (s *APIServer) handleDeleteAccount(w http.ResponseWriter, r *http.Request) error {
